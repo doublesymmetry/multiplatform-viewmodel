@@ -1,6 +1,6 @@
 # multiplatform-viewmodel 🗳
 
-Create shared `ViewModel`'s for shared business logic!
+Create shared `ViewModel`'s for shared business logic using our `ViewModel` base class.
 
 ## Features
 - [x] Uses Jetpack `ViewModel` on Android for lifecycled 
