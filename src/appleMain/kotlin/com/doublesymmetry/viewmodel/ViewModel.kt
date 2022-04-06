@@ -5,8 +5,6 @@ import co.touchlab.stately.concurrency.withLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlin.coroutines.CoroutineContext
 
 actual open class ViewModel {
     private val lock = Lock()
@@ -44,17 +42,5 @@ actual open class ViewModel {
                 }
             }
         }
-    }
-}
-
-interface Closeable {
-    fun close()
-}
-
-class CloseableCoroutineScope(context: CoroutineContext) : Closeable, CoroutineScope {
-    override val coroutineContext: CoroutineContext = context
-
-    override fun close() {
-        coroutineContext.cancel()
     }
 }

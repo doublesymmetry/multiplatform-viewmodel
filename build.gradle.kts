@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.doublesymmetry"
-version = "0.0.1"
+version = "0.0.7"
 
 repositories {
     google()
@@ -22,60 +22,43 @@ android {
 
 kotlin {
     android {
-        publishLibraryVariants("release", "debug")
+        publishAllLibraryVariants()
+        publishLibraryVariantsGroupedByFlavor = true
     }
 
-    if (System.getProperty("idea.sync.active") == null) {
-        val appleMain = sourceSets.create("appleMain")
-        val appleTest = sourceSets.create("appleTest")
+    macosX64()
+    iosArm32()
+    iosArm64()
+    iosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosX86()
+    watchosX64()
+    tvosArm64()
+    tvosX64()
 
-        macosX64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        macosArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
+    macosArm64()
+    iosSimulatorArm64()
+    watchosSimulatorArm64()
+    tvosSimulatorArm64()
 
-        iosArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        iosX64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        iosSimulatorArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
+    val nativeTargets = listOf(
+        "macosX64",
+        "iosArm32",
+        "iosArm64",
+        "iosX64",
+        "watchosArm32",
+        "watchosArm64",
+        "watchosX86",
+        "watchosX64",
+        "tvosArm64",
+        "tvosX64",
 
-        watchosArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        watchosSimulatorArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-
-        tvosArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        tvosX64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-        tvosSimulatorArm64().apply {
-            compilations.getByName("main").source(appleMain)
-            compilations.getByName("test").source(appleTest)
-        }
-    } else {
-        // Using intelliJ, pretend we have a single target with code in apple
-        macosX64("apple")
-    }
+        "macosArm64",
+        "iosSimulatorArm64",
+        "watchosSimulatorArm64",
+        "tvosSimulatorArm64"
+    )
 
     
     sourceSets {
@@ -89,17 +72,33 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+
         val androidMain by getting {
             dependencies {
-                implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+                api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
             }
         }
         val androidTest by getting
 
-        val appleMain by getting {
+        val appleMain by creating {
+            dependsOn(commonMain)
             dependencies {
                 implementation("co.touchlab:stately-concurrency:1.2.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+            }
+        }
+
+        val appleTest by creating {
+            dependsOn(commonTest)
+        }
+
+        with(nativeTargets) {
+            map { "${it}Main" }.forEach { getByName(it).dependsOn(appleMain) }
+            map { "${it}Test" }.forEach { getByName(it).dependsOn(appleTest) }
+        }
+
+        all {
+            languageSettings {
+                optIn("kotlin.RequiresOptIn")
             }
         }
     }
