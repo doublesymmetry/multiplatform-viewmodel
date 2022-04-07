@@ -1,11 +1,11 @@
 plugins {
     kotlin("multiplatform") version "1.6.10"
     id("com.android.library") version "7.0.3"
-    id("maven-publish")
+    id("convention.publication")
 }
 
 group = "com.doublesymmetry"
-version = "0.0.7"
+version = "0.0.1"
 
 repositories {
     google()
