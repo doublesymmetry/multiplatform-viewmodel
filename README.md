@@ -35,6 +35,22 @@ ios {
 }
 ```
 
-## Using it on iOS with a `UIViewController`
+## Using the ViewModel
+
+```kotlin
+class ExampleViewModel: ViewModel() {
+    private val _viewState = MutableStateFlow(UIViewState())
+    val viewState: StateFlow<UIViewState> = _viewState
+ 
+    fun onLaunched() {
+        scope.launch {
+            // fetch some data
+            _viewState.emit(newState)
+        }
+    }
+}
+```
+
+### Using your ViewModel on iOS with a `UIViewController`
 When using it on iOS you'll want to make sure that you call `clear()` on your ViewModel on `deinit` to properly kill the `CoroutineScope`
 
