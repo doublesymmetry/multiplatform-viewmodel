@@ -83,7 +83,7 @@ kotlin {
         val appleMain by creating {
             dependsOn(commonMain)
             dependencies {
-                implementation("co.touchlab:stately-concurrency:1.2.1")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.17.2")
             }
         }
 

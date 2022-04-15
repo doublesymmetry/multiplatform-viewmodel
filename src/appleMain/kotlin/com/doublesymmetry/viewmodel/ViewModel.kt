@@ -1,13 +1,13 @@
 package com.doublesymmetry.viewmodel
 
-import co.touchlab.stately.concurrency.Lock
-import co.touchlab.stately.concurrency.withLock
+import kotlinx.atomicfu.locks.reentrantLock
+import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 actual open class ViewModel {
-    private val lock = Lock()
+    private val lock = reentrantLock()
     private var backingScope: CoroutineScope? = null
 
     actual val scope: CoroutineScope
@@ -23,7 +23,7 @@ actual open class ViewModel {
     }
 
     private fun getScopeInstance(): CoroutineScope? {
-        return lock.withLock { backingScope }
+        lock.withLock { return backingScope }
     }
 
     private fun createScopeInstance(): CoroutineScope {
