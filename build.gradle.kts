@@ -3,6 +3,7 @@ plugins {
     id("com.android.library") version "7.0.3"
     id("convention.publication")
     id("binary-compatibility-validator") version "0.8.0"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
 group = "com.doublesymmetry"
