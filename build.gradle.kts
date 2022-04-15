@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform") version "1.6.10"
     id("com.android.library") version "7.0.3"
     id("convention.publication")
+    id("binary-compatibility-validator") version "0.8.0"
 }
 
 group = "com.doublesymmetry"
