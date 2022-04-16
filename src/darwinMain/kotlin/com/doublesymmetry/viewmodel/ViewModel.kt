@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-actual open class ViewModel {
+actual abstract class ViewModel {
     private val lock = reentrantLock()
     private var backingScope: CoroutineScope? = null
 
@@ -15,11 +15,15 @@ actual open class ViewModel {
             return this.getScopeInstance() ?: this.createScopeInstance()
         }
 
+    protected actual open fun onCleared() {}
+
     fun clear() {
         lock.withLock {
             closeWithRuntimeException(backingScope)
             backingScope = null
         }
+
+        onCleared()
     }
 
     private fun getScopeInstance(): CoroutineScope? {
