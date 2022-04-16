@@ -10,7 +10,7 @@ actual open class ViewModel {
     private val lock = reentrantLock()
     private var backingScope: CoroutineScope? = null
 
-    actual val scope: CoroutineScope
+    actual val viewModelScope: CoroutineScope
         get() {
             return this.getScopeInstance() ?: this.createScopeInstance()
         }
