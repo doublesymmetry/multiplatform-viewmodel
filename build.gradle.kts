@@ -82,20 +82,20 @@ kotlin {
         }
         val androidTest by getting
 
-        val appleMain by creating {
+        val darwinMain by creating {
             dependsOn(commonMain)
             dependencies {
                 implementation("org.jetbrains.kotlinx:atomicfu:0.17.2")
             }
         }
 
-        val appleTest by creating {
+        val darwinTest by creating {
             dependsOn(commonTest)
         }
 
         with(nativeTargets) {
-            map { "${it}Main" }.forEach { getByName(it).dependsOn(appleMain) }
-            map { "${it}Test" }.forEach { getByName(it).dependsOn(appleTest) }
+            map { "${it}Main" }.forEach { getByName(it).dependsOn(darwinMain) }
+            map { "${it}Test" }.forEach { getByName(it).dependsOn(darwinTest) }
         }
 
         all {
