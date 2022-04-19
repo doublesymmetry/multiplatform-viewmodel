@@ -5,8 +5,9 @@ public final class com/doublesymmetry/viewmodel/BuildConfig {
 	public fun <init> ()V
 }
 
-public class com/doublesymmetry/viewmodel/ViewModel : androidx/lifecycle/ViewModel {
+public abstract class com/doublesymmetry/viewmodel/ViewModel : androidx/lifecycle/ViewModel {
 	public fun <init> ()V
-	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
+	public final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;
+	protected fun onCleared ()V
 }
 

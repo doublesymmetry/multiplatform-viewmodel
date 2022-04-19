@@ -3,6 +3,11 @@ package com.doublesymmetry.viewmodel
 import kotlinx.coroutines.CoroutineScope
 
 expect abstract class ViewModel() {
+    /**
+     * [CoroutineScope] tied to this [ViewModel]. This scope will be canceled when ViewModel will be cleared, i.e [ViewModel.onCleared] is called
+     *
+     * This scope is bound to [Dispatchers.Main.immediate]
+     */
     val viewModelScope: CoroutineScope
 
     /**

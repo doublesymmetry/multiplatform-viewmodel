@@ -1,39 +1,29 @@
 package com.doublesymmetry.viewmodel
 
-import kotlinx.atomicfu.locks.reentrantLock
-import kotlinx.atomicfu.locks.withLock
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 
 actual abstract class ViewModel {
-    private val lock = reentrantLock()
-    private var backingScope: CoroutineScope? = null
+    private var hasCleared = false
 
-    actual val viewModelScope: CoroutineScope
-        get() {
-            return this.getScopeInstance() ?: this.createScopeInstance()
-        }
+    actual val viewModelScope: CoroutineScope by lazy {
+        val result = CloseableCoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+        if (hasCleared)
+            closeWithRuntimeException(result)
+
+        return@lazy result
+    }
 
     protected actual open fun onCleared() {}
 
+    /**
+     * Closes the [viewModelScope] and cancels all its coroutines.
+     * Should be called from main thread.
+     */
     fun clear() {
-        lock.withLock {
-            closeWithRuntimeException(backingScope)
-            backingScope = null
-        }
-
+        hasCleared = true
+        closeWithRuntimeException(viewModelScope)
         onCleared()
-    }
-
-    private fun getScopeInstance(): CoroutineScope? {
-        lock.withLock { return backingScope }
-    }
-
-    private fun createScopeInstance(): CoroutineScope {
-        val scope = CloseableCoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-        backingScope = scope
-        return scope
     }
 
     companion object {
