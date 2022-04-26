@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.doublesymmetry"
-version = "0.0.2"
+version = "0.0.3"
 
 repositories {
     google()
