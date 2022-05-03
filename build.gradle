@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 
 plugins {
@@ -27,10 +28,28 @@ android {
 }
 
 kotlin {
-    jvm()
     android {
         publishAllLibraryVariants()
         publishLibraryVariantsGroupedByFlavor = true
+    }
+
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                kotlinOptions.jvmTarget = "11"
+                freeCompilerArgs = freeCompilerArgs + ["-Xjvm-default=all"]
+            }
+        }
+    }
+
+    js(BOTH) {
+        compilations.all {
+            kotlinOptions {
+                moduleKind = "commonjs"
+            }
+        }
+        browser()
+        nodejs()
     }
 
     macosX64()
@@ -41,6 +60,7 @@ kotlin {
     watchosSimulatorArm64()
     tvos()
     tvosSimulatorArm64()
+
     linuxX64()
     mingwX64()
     
@@ -102,4 +122,8 @@ kotlin.targets.withType(KotlinNativeTarget.class) {
     binaries.all {
         binaryOptions["memoryModel"] = "experimental"
     }
+}
+
+rootProject.plugins.withType(Class.forName("org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin")) {
+    rootProject.extensions.getByType(NodeJsRootExtension.class).nodeVersion = "16.0.0"
 }
