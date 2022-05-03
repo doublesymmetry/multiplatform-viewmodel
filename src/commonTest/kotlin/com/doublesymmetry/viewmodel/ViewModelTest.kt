@@ -19,7 +19,7 @@ class ViewModelTest {
     }
 
     @Test
-    fun `viewModelScope lazily created on first access and is thread safe`() = runTest {
+    fun lazyViewModelScopeIsThreadSafe() = runTest {
         val testViewModel =  object : ViewModel() {}
         val scope = testViewModel.viewModelScope
         val scope2 = testViewModel.viewModelScope
