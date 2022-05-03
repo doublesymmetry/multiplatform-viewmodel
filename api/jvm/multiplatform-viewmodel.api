@@ -1,0 +1,25 @@
+public abstract interface class com/doublesymmetry/viewmodel/Closeable {
+	public abstract fun close ()V
+}
+
+public final class com/doublesymmetry/viewmodel/CloseableCoroutineScope : com/doublesymmetry/viewmodel/Closeable, kotlinx/coroutines/CoroutineScope {
+	public static final field Companion Lcom/doublesymmetry/viewmodel/CloseableCoroutineScope$Companion;
+	public fun <init> (Lkotlin/coroutines/CoroutineContext;)V
+	public fun close ()V
+	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
+}
+
+public final class com/doublesymmetry/viewmodel/CloseableCoroutineScope$Companion {
+}
+
+public abstract class com/doublesymmetry/viewmodel/ViewModel {
+	public static final field Companion Lcom/doublesymmetry/viewmodel/ViewModel$Companion;
+	public fun <init> ()V
+	public final fun clear ()V
+	public final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;
+	protected fun onCleared ()V
+}
+
+public final class com/doublesymmetry/viewmodel/ViewModel$Companion {
+}
+
