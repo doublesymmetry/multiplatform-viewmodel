@@ -1,0 +1,108 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.KonanTarget
+
+plugins {
+    id("org.jetbrains.kotlin.multiplatform").version("1.6.10")
+    id("com.android.library").version("7.0.3")
+    id("convention.publication")
+    id("binary-compatibility-validator").version("0.8.0")
+    id("io.gitlab.arturbosch.detekt").version("1.19.0")
+}
+
+group = "com.doublesymmetry"
+version = "0.0.3"
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+android {
+    compileSdk = 32
+    defaultConfig {
+        minSdk = 21
+        targetSdk = 32
+    }
+}
+
+kotlin {
+    android {
+        publishAllLibraryVariants()
+        publishLibraryVariantsGroupedByFlavor = true
+    }
+
+    macosX64()
+    macosArm64()
+    ios()
+    iosSimulatorArm64()
+    watchos()
+    watchosSimulatorArm64()
+    tvos()
+    tvosSimulatorArm64()
+    
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
+            }
+        }
+
+        androidMain {
+            dependencies {
+                api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+            }
+        }
+        androidTest
+
+        darwinMain {
+            dependsOn(commonMain)
+            dependencies {
+                implementation("org.jetbrains.kotlinx:atomicfu:0.17.2")
+            }
+        }
+
+        darwinTest {
+            dependsOn(commonTest)
+        }
+
+        targets.all { target ->
+            if (target.platformType == KotlinPlatformType.native) {
+                target.compilations["main"].defaultSourceSet {
+                    if (target.konanTarget.family == Family.OSX || target.konanTarget.family == Family.IOS || target.konanTarget.family == Family.TVOS || target.konanTarget.family == Family.WATCHOS) {
+                        dependsOn(darwinMain)
+                    } else {
+                        throw GradleException("unknown native target $target")
+                    }
+                }
+                target.compilations["test"].defaultSourceSet {
+                    dependsOn(darwinTest)
+                }
+            }
+        }
+        // Workaround for https://youtrack.jetbrains.com/issue/KT-51763
+        // Make sure commonization runs before any compilation task.
+        tasks.withType(KotlinNativeCompile).configureEach {
+            it.dependsOn(tasks.named("commonize"))
+        }
+
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+        }
+    }
+}
+
+kotlin.targets.withType(KotlinNativeTarget.class) {
+    binaries.all {
+        binaryOptions["memoryModel"] = "experimental"
+    }
+}
